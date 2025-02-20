@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, List, Tag, Rate, Modal } from 'antd';
 import { Template } from '@pdfme/common';
-import { SearchOutlined, DownloadOutlined, StarOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 
 interface TemplateItem extends Template {
   id: string;
@@ -15,7 +15,7 @@ interface TemplateItem extends Template {
 
 export const TemplateMarketplace: React.FC = () => {
   const [templates, setTemplates] = useState<TemplateItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [, setSearchQuery] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateItem | null>(null);
 
   useEffect(() => {
@@ -70,12 +70,14 @@ export const TemplateMarketplace: React.FC = () => {
               hoverable
               actions={[
                 <Button 
+                  key="download"
                   icon={<DownloadOutlined />}
                   onClick={() => handleDownload(template)}
                 >
                   Download
                 </Button>,
                 <Button
+                  key="preview"
                   onClick={() => handlePreview(template)}
                 >
                   Preview

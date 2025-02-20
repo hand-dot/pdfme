@@ -1,6 +1,5 @@
 import { createWorker } from 'tesseract.js';
 import { Template } from '@pdfme/common';
-import type { TextSchema } from '@pdfme/schemas/dist/types/src/text/types';
 
 export interface OCROptions {
   lang?: string;
@@ -21,39 +20,29 @@ export async function extractTextFromImage(options: OCROptions): Promise<string>
 export async function createTemplateFromImage(options: OCROptions): Promise<Template> {
   const text = await extractTextFromImage(options);
   
-  const textSchema: TextSchema = {
+  const schema = {
+    name: 'OCR Text',
     type: 'text',
+    content: text,
     position: { x: 0, y: 0 },
     width: 500,
     height: 700,
+    rotate: 0,
+    opacity: 1,
+    readOnly: false,
+    required: false,
     fontSize: 12,
     lineHeight: 1.2,
     characterSpacing: 0,
     alignment: 'left',
     verticalAlignment: 'top',
     fontColor: '#000000',
-    backgroundColor: '#ffffff'
-  };
+    backgroundColor: '#ffffff',
+    fontName: 'Helvetica'
+  } as const;
   
-  // Create a basic template with the extracted text
   return {
     basePdf: '',
-    schemas: [
-      {
-        name: 'OCR Text',
-        type: 'text',
-        position: textSchema.position,
-        width: textSchema.width,
-        height: textSchema.height,
-        fontSize: textSchema.fontSize,
-        lineHeight: textSchema.lineHeight,
-        characterSpacing: textSchema.characterSpacing,
-        alignment: textSchema.alignment,
-        verticalAlignment: textSchema.verticalAlignment,
-        fontColor: textSchema.fontColor,
-        backgroundColor: textSchema.backgroundColor,
-        content: text
-      }
-    ]
+    schemas: [[schema]]
   };
 }
