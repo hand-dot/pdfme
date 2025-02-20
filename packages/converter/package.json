@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@pdfme/common": "*",
+    "tesseract.js": "^4.1.1",
     "@pdfme/pdf-lib": "*",
     "pdfjs-dist": "^3.11.174"
   },
