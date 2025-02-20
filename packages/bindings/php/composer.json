@@ -1,0 +1,21 @@
+{
+    "name": "pdfme/pdfme",
+    "description": "PHP bindings for PDFme - PDF generation library",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PDFme Team",
+            "email": "info@pdfme.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PDFme\\": "src/"
+        }
+    }
+}
