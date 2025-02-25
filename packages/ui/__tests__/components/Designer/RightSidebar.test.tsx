@@ -238,7 +238,10 @@ describe('RightSidebar Component', () => {
     
     const onChangeMock = jest.fn();
     
+    // When passing schemas array, we need to also pass a schema prop
+    // to ensure the component renders correctly
     const { getByTestId } = renderComponent({
+      schema: schemas[0], // Pass the first schema as the selected schema
       schemas,
       onChange: onChangeMock,
     });
