@@ -4,13 +4,11 @@
 import React from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Designer from '../../src/Designer';
-import Form from '../../src/Form';
-import Viewer from '../../src/Viewer';
-import { I18nContext, FontContext, PluginsRegistry } from '../../src/contexts';
-import { i18n } from '../../src/i18n';
-import { getDefaultFont, Template, BLANK_PDF, SchemaForUI } from '@pdfme/common';
+import { Template, BLANK_PDF } from '@pdfme/common';
 import { text, image } from "@pdfme/schemas";
+
+// Import mocks
+const { Designer, Form, Viewer } = require('../__mocks__/componentMocks');
 
 // Mock ReactDOM.render
 jest.mock('react-dom', () => ({
@@ -24,7 +22,10 @@ jest.mock('../../src/helper', () => ({
   uuid: jest.fn().mockReturnValue('test-uuid'),
 }));
 
-// We'll use the standard plugins (text, image) for testing
+// Mock the actual components
+jest.mock('../../src/Designer', () => Designer);
+jest.mock('../../src/Form', () => Form);
+jest.mock('../../src/Viewer', () => Viewer);
 
 describe('Plugin Integration', () => {
   let container: HTMLDivElement;
@@ -81,74 +82,6 @@ describe('Plugin Integration', () => {
     ],
   });
 
-  // We'll use the text and image templates for testing
-
-  // Mock the Renderer component to verify plugin usage
-  jest.mock('../../src/components/Renderer', () => ({
-    __esModule: true,
-    default: jest.fn().mockImplementation(({ schema, mode }) => (
-      <div data-testid={`renderer-${schema.type}${mode ? '-' + mode : ''}`}>
-        {schema.type === 'image' ? 'Image content' : schema.content}
-      </div>
-    )),
-  }));
-
-  // Mock the RightSidebar component to simulate property changes
-  jest.mock('../../src/components/Designer/RightSidebar', () => ({
-    __esModule: true,
-    default: jest.fn().mockImplementation(({ schema, onChange }) => {
-      return (
-        <div data-testid="right-sidebar-mock">
-          <button 
-            data-testid="change-font-size-button"
-            onClick={() => onChange({ key: 'fontSize', value: 16 })}
-          >
-            Change Font Size
-          </button>
-          <div data-testid="schema-font-size">{schema?.fontSize}</div>
-        </div>
-      );
-    }),
-  }));
-
-  // Mock the Designer, Form, and Viewer classes
-  jest.mock('../../src/Designer', () => {
-    return {
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ domContainer, template }) => {
-        // Render the mock components directly to the DOM
-        const div = document.createElement('div');
-        div.setAttribute('data-testid', 'designer-container');
-        
-        // Add a schema element for each schema in the template
-        template.schemas[0].forEach(schema => {
-          const schemaEl = document.createElement('div');
-          schemaEl.setAttribute('data-testid', `renderer-${schema.type}`);
-          schemaEl.textContent = schema.type === 'image' ? 'Image content' : schema.content;
-          div.appendChild(schemaEl);
-        });
-        
-        // Add the right sidebar mock
-        const sidebarEl = document.createElement('div');
-        sidebarEl.setAttribute('data-testid', 'right-sidebar-mock');
-        
-        const buttonEl = document.createElement('button');
-        buttonEl.setAttribute('data-testid', 'change-font-size-button');
-        buttonEl.textContent = 'Change Font Size';
-        sidebarEl.appendChild(buttonEl);
-        
-        div.appendChild(sidebarEl);
-        domContainer.appendChild(div);
-        
-        return {
-          onChangeTemplate: jest.fn(),
-          updateTemplate: jest.fn(),
-          destroy: jest.fn(),
-        };
-      }),
-    };
-  });
-  
   test('should render text plugin in Designer', async () => {
     // Initialize the Designer with text plugin
     const designer = new Designer({
@@ -181,60 +114,6 @@ describe('Plugin Integration', () => {
       expect(imagePlugin).toBeInTheDocument();
       expect(imagePlugin?.textContent).toBe('Image content');
     });
-  });
-
-  // Mock Form class
-  jest.mock('../../src/Form', () => {
-    return {
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
-        // Render the mock components directly to the DOM
-        const div = document.createElement('div');
-        div.setAttribute('data-testid', 'form-container');
-        
-        // Add a schema element for each schema in the template
-        template.schemas[0].forEach(schema => {
-          const schemaEl = document.createElement('div');
-          schemaEl.setAttribute('data-testid', `renderer-${schema.type}-form`);
-          schemaEl.textContent = inputs[0][schema.name] || schema.content;
-          div.appendChild(schemaEl);
-        });
-        
-        domContainer.appendChild(div);
-        
-        return {
-          updateTemplate: jest.fn(),
-          destroy: jest.fn(),
-        };
-      }),
-    };
-  });
-  
-  // Mock Viewer class
-  jest.mock('../../src/Viewer', () => {
-    return {
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
-        // Render the mock components directly to the DOM
-        const div = document.createElement('div');
-        div.setAttribute('data-testid', 'viewer-container');
-        
-        // Add a schema element for each schema in the template
-        template.schemas[0].forEach(schema => {
-          const schemaEl = document.createElement('div');
-          schemaEl.setAttribute('data-testid', `renderer-${schema.type}-viewer`);
-          schemaEl.textContent = inputs[0][schema.name] || schema.content;
-          div.appendChild(schemaEl);
-        });
-        
-        domContainer.appendChild(div);
-        
-        return {
-          updateTemplate: jest.fn(),
-          destroy: jest.fn(),
-        };
-      }),
-    };
   });
 
   test('should use standard plugins in Form and Viewer', async () => {
