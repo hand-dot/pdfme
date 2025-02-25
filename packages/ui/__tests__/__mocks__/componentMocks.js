@@ -183,6 +183,15 @@ const mockViewer = jest.fn().mockImplementation(({ domContainer, template, input
     // Add schema elements for each schema in the template
     if (template && template.schemas && template.schemas[0]) {
       template.schemas[0].forEach(schema => {
+        // Create a renderer element for the viewer field
+        const rendererEl = document.createElement('div');
+        rendererEl.setAttribute('data-testid', `renderer-${schema.type}-viewer`);
+        rendererEl.textContent = currentInputs && currentInputs[0] && currentInputs[0][schema.name] !== undefined
+          ? currentInputs[0][schema.name]
+          : schema.content || '';
+        viewerContainer.appendChild(rendererEl);
+        
+        // Also create a field element for backward compatibility
         const schemaEl = document.createElement('div');
         schemaEl.setAttribute('data-testid', `viewer-field-${schema.name}`);
         schemaEl.textContent = currentInputs && currentInputs[0] && currentInputs[0][schema.name] !== undefined
@@ -198,12 +207,21 @@ const mockViewer = jest.fn().mockImplementation(({ domContainer, template, input
   
   domContainer.appendChild(viewerContainer);
   
+  // Store inputs for getInputs method
+  let currentInputs = inputs || [{}];
+  
   return {
-    updateTemplate: jest.fn(),
+    updateTemplate: jest.fn().mockImplementation((newTemplate) => {
+      // Reset inputs when template is updated
+      currentInputs = [{}];
+    }),
     setInputs: (newInputs) => {
+      // Store the new inputs
+      currentInputs = newInputs;
       // Re-render with new inputs
       renderFields(newInputs);
     },
+    getInputs: () => currentInputs,
     destroy: jest.fn(),
   };
 });
