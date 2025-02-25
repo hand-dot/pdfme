@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Canvas from '../../../src/components/Canvas';
+import Canvas from '../../../src/components/Designer/Canvas';
 import { I18nContext, FontContext, PluginsRegistry, CacheContext, OptionsContext } from '../../../src/contexts';
 import { i18n } from '../../../src/i18n';
 import { getDefaultFont, SchemaForUI, BLANK_PDF } from '@pdfme/common';
@@ -12,14 +12,14 @@ import { text, image } from "@pdfme/schemas";
 import { SELECTABLE_CLASSNAME } from '../../../src/constants';
 
 // Mock the Moveable and Selecto components
-jest.mock('../../../src/components/Canvas/Moveable', () => ({
+jest.mock('../../../src/components/Designer/Canvas/Moveable', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(({ children }) => (
     <div data-testid="moveable-mock">{children}</div>
   )),
 }));
 
-jest.mock('../../../src/components/Canvas/Selecto', () => ({
+jest.mock('../../../src/components/Designer/Canvas/Selecto', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(({ children }) => (
     <div data-testid="selecto-mock">{children}</div>
@@ -27,7 +27,7 @@ jest.mock('../../../src/components/Canvas/Selecto', () => ({
 }));
 
 // Mock the Guides component
-jest.mock('../../../src/components/Canvas/Guides', () => ({
+jest.mock('../../../src/components/Designer/Canvas/Guides', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => (
     <div data-testid="guides-mock"></div>

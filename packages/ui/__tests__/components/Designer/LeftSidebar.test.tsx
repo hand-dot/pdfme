@@ -58,7 +58,11 @@ describe('LeftSidebar Component', () => {
   };
 
   test('should render sidebar with plugins', () => {
-    const { getByTestId } = renderComponent({});
+    const { getByTestId } = renderComponent({
+      height: 600,
+      scale: 1,
+      basePdf: "data:application/pdf;base64,test"
+    });
     
     // Check that the collapse component is rendered
     expect(getByTestId('collapse-mock')).toBeInTheDocument();
@@ -71,7 +75,11 @@ describe('LeftSidebar Component', () => {
       effectAllowed: '',
     };
     
-    const { container } = renderComponent({});
+    const { container } = renderComponent({
+      height: 600,
+      scale: 1,
+      basePdf: "data:application/pdf;base64,test"
+    });
     
     // Find the draggable elements
     const draggableElements = container.querySelectorAll('[draggable="true"]');
@@ -92,7 +100,11 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should display plugin icons', () => {
-    const { container } = renderComponent({});
+    const { container } = renderComponent({
+      height: 600,
+      scale: 1,
+      basePdf: "data:application/pdf;base64,test"
+    });
     
     // Check that plugin icons are rendered
     const icons = container.querySelectorAll('svg');
@@ -100,7 +112,11 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should display plugin names', () => {
-    const { container } = renderComponent({});
+    const { container } = renderComponent({
+      height: 600,
+      scale: 1,
+      basePdf: "data:application/pdf;base64,test"
+    });
     
     // Check that plugin names are displayed
     expect(container.textContent).toContain('text');
@@ -124,18 +140,27 @@ describe('LeftSidebar Component', () => {
     
     const customPlugins = { ...plugins, custom: customPlugin };
     
-    const { container } = render(
+    const testContainer = document.createElement('div');
+    document.body.appendChild(testContainer);
+    
+    const { getByText } = render(
       <I18nContext.Provider value={i18n}>
         <FontContext.Provider value={getDefaultFont()}>
           <PluginsRegistry.Provider value={customPlugins}>
-            <LeftSidebar />
+            <LeftSidebar 
+              height={600}
+              scale={1}
+              basePdf="data:application/pdf;base64,test"
+            />
           </PluginsRegistry.Provider>
         </FontContext.Provider>
       </I18nContext.Provider>,
-      { container }
+      { container: testContainer }
     );
     
     // Check that the custom plugin is displayed
-    expect(container.textContent).toContain('custom');
+    expect(getByText('custom')).toBeInTheDocument();
+    
+    document.body.removeChild(testContainer);
   });
 });
