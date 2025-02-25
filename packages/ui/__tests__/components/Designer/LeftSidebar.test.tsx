@@ -15,8 +15,33 @@ jest.mock('antd', () => {
   const actual = jest.requireActual('antd');
   return {
     ...actual,
-    Collapse: jest.fn().mockImplementation(({ children }) => (
-      <div data-testid="collapse-mock">{children}</div>
+    Collapse: jest.fn().mockImplementation(({ children, items }) => {
+      // Create a mock implementation that renders the items
+      return (
+        <div data-testid="collapse-mock">
+          {items && items.map((item, index) => (
+            <div key={index} className="ant-collapse-item">
+              <div className="ant-collapse-header">{item.label}</div>
+              <div className="ant-collapse-content">
+                <div className="ant-collapse-content-box">
+                  {item.children}
+                </div>
+              </div>
+            </div>
+          ))}
+          {children}
+        </div>
+      );
+    }),
+    CollapsePanel: jest.fn().mockImplementation(({ children, header }) => (
+      <div className="ant-collapse-item">
+        <div className="ant-collapse-header">{header}</div>
+        <div className="ant-collapse-content">
+          <div className="ant-collapse-content-box">
+            {children}
+          </div>
+        </div>
+      </div>
     )),
     theme: {
       useToken: jest.fn().mockReturnValue({
@@ -27,6 +52,31 @@ jest.mock('antd', () => {
         },
       }),
     },
+  };
+});
+
+// Mock the plugin components
+jest.mock('../../../src/components/Designer/PluginItem', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ plugin, onDragStart }) => {
+      // Create a draggable element with the plugin name
+      return (
+        <div 
+          className="plugin-item" 
+          draggable="true"
+          onDragStart={onDragStart}
+          data-testid={`plugin-${plugin.type}`}
+        >
+          <div className="plugin-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z" />
+            </svg>
+          </div>
+          <div className="plugin-name">{plugin.type}</div>
+        </div>
+      );
+    }),
   };
 });
 
@@ -75,7 +125,7 @@ describe('LeftSidebar Component', () => {
       effectAllowed: '',
     };
     
-    const { container } = renderComponent({
+    renderComponent({
       height: 600,
       scale: 1,
       basePdf: "data:application/pdf;base64,test"
@@ -100,7 +150,7 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should display plugin icons', () => {
-    const { container } = renderComponent({
+    renderComponent({
       height: 600,
       scale: 1,
       basePdf: "data:application/pdf;base64,test"
@@ -112,7 +162,7 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should display plugin names', () => {
-    const { container } = renderComponent({
+    renderComponent({
       height: 600,
       scale: 1,
       basePdf: "data:application/pdf;base64,test"
@@ -124,19 +174,36 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should handle custom plugins', () => {
-    // Skip this test as it requires more complex type definitions
-    // In a real implementation, we would need to properly type the custom plugin
-    // to match the expected Plugins interface
+    // Create a custom plugin
+    const customPlugins = { 
+      ...plugins,
+      custom: {
+        type: 'custom',
+        name: 'Custom',
+        icon: () => <div>Custom Icon</div>,
+        render: () => <div>Custom Content</div>,
+      }
+    };
     
-    // Instead, we'll test that the existing plugins are displayed correctly
-    const { container } = renderComponent({
-      height: 600,
-      scale: 1,
-      basePdf: "data:application/pdf;base64,test"
-    });
+    // Render with custom plugins
+    render(
+      <I18nContext.Provider value={i18n}>
+        <FontContext.Provider value={getDefaultFont()}>
+          <PluginsRegistry.Provider value={customPlugins}>
+            <LeftSidebar 
+              height={600}
+              scale={1}
+              basePdf="data:application/pdf;base64,test"
+            />
+          </PluginsRegistry.Provider>
+        </FontContext.Provider>
+      </I18nContext.Provider>,
+      { container }
+    );
     
-    // Check that both standard plugins are displayed
+    // Check that both standard plugins and custom plugin are displayed
     expect(container.textContent).toContain('text');
     expect(container.textContent).toContain('image');
+    expect(container.textContent).toContain('custom');
   });
 });
