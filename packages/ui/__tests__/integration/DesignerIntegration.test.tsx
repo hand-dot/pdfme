@@ -4,7 +4,8 @@
 import React from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Designer from '../../src/Designer';
+// Import the mock Designer instead of the real one
+const { Designer } = require('../__mocks__/componentMocks');
 import { I18nContext, FontContext, PluginsRegistry, CacheContext, OptionsContext } from '../../src/contexts';
 import { i18n } from '../../src/i18n';
 import { getDefaultFont, Template, BLANK_PDF, SchemaForUI } from '@pdfme/common';

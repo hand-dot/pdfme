@@ -174,7 +174,7 @@ describe('LeftSidebar Component', () => {
   });
 
   test('should handle custom plugins', () => {
-    // Create a custom plugin
+    // Create a custom plugin with proper type
     const customPlugins = { 
       ...plugins,
       custom: {
@@ -182,6 +182,10 @@ describe('LeftSidebar Component', () => {
         name: 'Custom',
         icon: () => <div>Custom Icon</div>,
         render: () => <div>Custom Content</div>,
+        schema: {
+          type: 'object',
+          properties: {}
+        }
       }
     };
     
