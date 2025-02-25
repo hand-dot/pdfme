@@ -175,6 +175,7 @@ describe('LeftSidebar Component', () => {
 
   test('should handle custom plugins', () => {
     // Create a custom plugin with proper type
+    // Cast as any to avoid type errors with custom plugins
     const customPlugins = { 
       ...plugins,
       custom: {
@@ -187,7 +188,7 @@ describe('LeftSidebar Component', () => {
           properties: {}
         }
       }
-    };
+    } as any;
     
     // Render with custom plugins
     render(
