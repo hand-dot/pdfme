@@ -67,11 +67,17 @@ describe('RightSidebar Component', () => {
   });
 
   const renderComponent = (props: any) => {
+    // Ensure activeElements is always provided with a default empty array
+    const mergedProps = {
+      activeElements: [],
+      ...props
+    };
+    
     return render(
       <I18nContext.Provider value={i18n}>
         <FontContext.Provider value={getDefaultFont()}>
           <PluginsRegistry.Provider value={plugins}>
-            <RightSidebar {...props} />
+            <RightSidebar {...mergedProps} />
           </PluginsRegistry.Provider>
         </FontContext.Provider>
       </I18nContext.Provider>,

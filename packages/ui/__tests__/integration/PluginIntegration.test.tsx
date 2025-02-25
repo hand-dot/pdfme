@@ -83,15 +83,35 @@ describe('Plugin Integration', () => {
 
   // We'll use the text and image templates for testing
 
+  // Mock the Renderer component to verify plugin usage
+  jest.mock('../../src/components/Renderer', () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ schema, mode }) => (
+      <div data-testid={`renderer-${schema.type}${mode ? '-' + mode : ''}`}>
+        {schema.type === 'image' ? 'Image content' : schema.content}
+      </div>
+    )),
+  }));
+
+  // Mock the RightSidebar component to simulate property changes
+  jest.mock('../../src/components/Designer/RightSidebar', () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ schema, onChange }) => {
+      return (
+        <div data-testid="right-sidebar-mock">
+          <button 
+            data-testid="change-font-size-button"
+            onClick={() => onChange({ key: 'fontSize', value: 16 })}
+          >
+            Change Font Size
+          </button>
+          <div data-testid="schema-font-size">{schema?.fontSize}</div>
+        </div>
+      );
+    }),
+  }));
+
   test('should render text plugin in Designer', async () => {
-    // Mock the Renderer component to verify plugin usage
-    jest.mock('../../src/components/Renderer', () => ({
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ schema }) => (
-        <div data-testid={`renderer-${schema.type}`}>{schema.content}</div>
-      )),
-    }));
-    
     // Initialize the Designer with text plugin
     const designer = new Designer({
       domContainer: container,
@@ -109,14 +129,6 @@ describe('Plugin Integration', () => {
   });
 
   test('should render image plugin in Designer', async () => {
-    // Mock the Renderer component to verify plugin usage
-    jest.mock('../../src/components/Renderer', () => ({
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ schema }) => (
-        <div data-testid={`renderer-${schema.type}`}>{schema.type === 'image' ? 'Image content' : schema.content}</div>
-      )),
-    }));
-    
     // Initialize the Designer with image plugin
     const designer = new Designer({
       domContainer: container,
@@ -134,16 +146,6 @@ describe('Plugin Integration', () => {
   });
 
   test('should use standard plugins in Form and Viewer', async () => {
-    // Mock the Renderer component to verify plugin usage
-    jest.mock('../../src/components/Renderer', () => ({
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ schema, mode }) => (
-        <div data-testid={`renderer-${schema.type}-${mode}`}>
-          {schema.content}
-        </div>
-      )),
-    }));
-    
     // Initialize the Form with text plugin
     const form = new Form({
       domContainer: container,
@@ -176,24 +178,6 @@ describe('Plugin Integration', () => {
   });
 
   test('should handle plugin property changes in Designer', async () => {
-    // Mock the RightSidebar component to simulate property changes
-    jest.mock('../../src/components/Designer/RightSidebar', () => ({
-      __esModule: true,
-      default: jest.fn().mockImplementation(({ schema, onChange }) => {
-        return (
-          <div data-testid="right-sidebar-mock">
-            <button 
-              data-testid="change-font-size-button"
-              onClick={() => onChange({ key: 'fontSize', value: 16 })}
-            >
-              Change Font Size
-            </button>
-            <div data-testid="schema-font-size">{schema?.fontSize}</div>
-          </div>
-        );
-      }),
-    }));
-    
     // Initialize the Designer with text plugin
     const designer = new Designer({
       domContainer: container,
