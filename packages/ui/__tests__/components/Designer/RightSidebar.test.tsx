@@ -238,11 +238,12 @@ describe('RightSidebar Component', () => {
     
     const onChangeMock = jest.fn();
     
-    // When passing schemas array, we need to also pass a schema prop
-    // to ensure the component renders correctly
+    // We need to set activeElements to include the schema IDs
+    // This is critical for the RightSidebar component to render DetailView
     const { getByTestId } = renderComponent({
       schema: schemas[0], // Pass the first schema as the selected schema
       schemas,
+      activeElements: [{ id: 'schema-1' }, { id: 'schema-2' }], // Set active elements
       onChange: onChangeMock,
     });
     
