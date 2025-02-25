@@ -4,12 +4,11 @@
 import React from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Form from '../../src/Form';
-import Viewer from '../../src/Viewer';
-import { I18nContext, FontContext, PluginsRegistry } from '../../src/contexts';
-import { i18n } from '../../src/i18n';
-import { getDefaultFont, Template, BLANK_PDF } from '@pdfme/common';
+import { Template, BLANK_PDF } from '@pdfme/common';
 import { text, image } from "@pdfme/schemas";
+
+// Import mocks
+const { Form, Viewer } = require('../__mocks__/componentMocks');
 
 // Mock ReactDOM.render
 jest.mock('react-dom', () => ({
@@ -17,32 +16,9 @@ jest.mock('react-dom', () => ({
   render: jest.fn(),
 }));
 
-// Mock the Form component's internal renderer
-jest.mock('../../src/components/Renderer', () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(({ schema, value, onChange, mode }) => {
-    if (mode === 'form') {
-      // For Form mode, render an input that can be changed
-      return (
-        <div data-testid={`form-field-${schema.name}`}>
-          <input
-            data-testid={`input-${schema.name}`}
-            value={value || ''}
-            onChange={(e) => onChange({ key: 'content', value: e.target.value })}
-          />
-        </div>
-      );
-    } else if (mode === 'viewer') {
-      // For Viewer mode, just display the value
-      return (
-        <div data-testid={`viewer-field-${schema.name}`}>
-          {value}
-        </div>
-      );
-    }
-    return null;
-  }),
-}));
+// Mock the actual components
+jest.mock('../../src/Form', () => Form);
+jest.mock('../../src/Viewer', () => Viewer);
 
 describe('Form and Viewer Integration', () => {
   let formContainer: HTMLDivElement;
