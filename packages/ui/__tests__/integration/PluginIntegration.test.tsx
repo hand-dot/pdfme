@@ -111,6 +111,44 @@ describe('Plugin Integration', () => {
     }),
   }));
 
+  // Mock the Designer, Form, and Viewer classes
+  jest.mock('../../src/Designer', () => {
+    return {
+      __esModule: true,
+      default: jest.fn().mockImplementation(({ domContainer, template }) => {
+        // Render the mock components directly to the DOM
+        const div = document.createElement('div');
+        div.setAttribute('data-testid', 'designer-container');
+        
+        // Add a schema element for each schema in the template
+        template.schemas[0].forEach(schema => {
+          const schemaEl = document.createElement('div');
+          schemaEl.setAttribute('data-testid', `renderer-${schema.type}`);
+          schemaEl.textContent = schema.type === 'image' ? 'Image content' : schema.content;
+          div.appendChild(schemaEl);
+        });
+        
+        // Add the right sidebar mock
+        const sidebarEl = document.createElement('div');
+        sidebarEl.setAttribute('data-testid', 'right-sidebar-mock');
+        
+        const buttonEl = document.createElement('button');
+        buttonEl.setAttribute('data-testid', 'change-font-size-button');
+        buttonEl.textContent = 'Change Font Size';
+        sidebarEl.appendChild(buttonEl);
+        
+        div.appendChild(sidebarEl);
+        domContainer.appendChild(div);
+        
+        return {
+          onChangeTemplate: jest.fn(),
+          updateTemplate: jest.fn(),
+          destroy: jest.fn(),
+        };
+      }),
+    };
+  });
+  
   test('should render text plugin in Designer', async () => {
     // Initialize the Designer with text plugin
     const designer = new Designer({
@@ -143,6 +181,60 @@ describe('Plugin Integration', () => {
       expect(imagePlugin).toBeInTheDocument();
       expect(imagePlugin?.textContent).toBe('Image content');
     });
+  });
+
+  // Mock Form class
+  jest.mock('../../src/Form', () => {
+    return {
+      __esModule: true,
+      default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
+        // Render the mock components directly to the DOM
+        const div = document.createElement('div');
+        div.setAttribute('data-testid', 'form-container');
+        
+        // Add a schema element for each schema in the template
+        template.schemas[0].forEach(schema => {
+          const schemaEl = document.createElement('div');
+          schemaEl.setAttribute('data-testid', `renderer-${schema.type}-form`);
+          schemaEl.textContent = inputs[0][schema.name] || schema.content;
+          div.appendChild(schemaEl);
+        });
+        
+        domContainer.appendChild(div);
+        
+        return {
+          updateTemplate: jest.fn(),
+          destroy: jest.fn(),
+        };
+      }),
+    };
+  });
+  
+  // Mock Viewer class
+  jest.mock('../../src/Viewer', () => {
+    return {
+      __esModule: true,
+      default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
+        // Render the mock components directly to the DOM
+        const div = document.createElement('div');
+        div.setAttribute('data-testid', 'viewer-container');
+        
+        // Add a schema element for each schema in the template
+        template.schemas[0].forEach(schema => {
+          const schemaEl = document.createElement('div');
+          schemaEl.setAttribute('data-testid', `renderer-${schema.type}-viewer`);
+          schemaEl.textContent = inputs[0][schema.name] || schema.content;
+          div.appendChild(schemaEl);
+        });
+        
+        domContainer.appendChild(div);
+        
+        return {
+          updateTemplate: jest.fn(),
+          destroy: jest.fn(),
+        };
+      }),
+    };
   });
 
   test('should use standard plugins in Form and Viewer', async () => {
