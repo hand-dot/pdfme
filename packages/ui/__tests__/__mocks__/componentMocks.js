@@ -7,13 +7,36 @@ const mockDesigner = jest.fn().mockImplementation(({ domContainer, template }) =
   const designerContainer = document.createElement('div');
   designerContainer.setAttribute('data-testid', 'designer-container');
   
+  // Add canvas mock
+  const canvasEl = document.createElement('div');
+  canvasEl.setAttribute('data-testid', 'canvas-mock');
+  
   // Add schema elements for each schema in the template
   if (template && template.schemas && template.schemas[0]) {
     template.schemas[0].forEach(schema => {
+      // Add ID to schema for testing
+      const schemaWithId = { ...schema, id: 'test-uuid' };
+      
       const schemaEl = document.createElement('div');
-      schemaEl.setAttribute('data-testid', `renderer-${schema.type}`);
+      schemaEl.setAttribute('data-testid', `schema-test-uuid`);
       schemaEl.textContent = schema.type === 'image' ? 'Image content' : schema.content;
-      designerContainer.appendChild(schemaEl);
+      
+      // Add update button
+      const updateButton = document.createElement('button');
+      updateButton.setAttribute('data-testid', `change-schema-test-uuid`);
+      updateButton.textContent = 'Update from Canvas';
+      updateButton.onclick = () => {
+        if (mockDesigner.onChangeTemplateCallback) {
+          const updatedTemplate = JSON.parse(JSON.stringify(template));
+          if (updatedTemplate.schemas[0][0]) {
+            updatedTemplate.schemas[0][0].content = 'Canvas updated content';
+          }
+          mockDesigner.onChangeTemplateCallback(updatedTemplate);
+        }
+      };
+      
+      schemaEl.appendChild(updateButton);
+      canvasEl.appendChild(schemaEl);
     });
   }
   
@@ -21,20 +44,43 @@ const mockDesigner = jest.fn().mockImplementation(({ domContainer, template }) =
   const sidebarEl = document.createElement('div');
   sidebarEl.setAttribute('data-testid', 'right-sidebar-mock');
   
-  const buttonEl = document.createElement('button');
-  buttonEl.setAttribute('data-testid', 'change-font-size-button');
-  buttonEl.textContent = 'Change Font Size';
-  buttonEl.onclick = () => {
+  // Add content display element
+  const contentEl = document.createElement('div');
+  contentEl.setAttribute('data-testid', 'schema-content');
+  contentEl.textContent = template?.schemas?.[0]?.[0]?.content || '';
+  sidebarEl.appendChild(contentEl);
+  
+  // Add change content button
+  const changeContentButton = document.createElement('button');
+  changeContentButton.setAttribute('data-testid', 'change-content-button');
+  changeContentButton.textContent = 'Change Content';
+  changeContentButton.onclick = () => {
     if (mockDesigner.onChangeTemplateCallback) {
       const updatedTemplate = JSON.parse(JSON.stringify(template));
       if (updatedTemplate.schemas[0][0]) {
-        updatedTemplate.schemas[0][0].fontSize = 16;
+        updatedTemplate.schemas[0][0].content = 'Updated content';
       }
       mockDesigner.onChangeTemplateCallback(updatedTemplate);
     }
   };
-  sidebarEl.appendChild(buttonEl);
+  sidebarEl.appendChild(changeContentButton);
   
+  // Add change position button
+  const changePositionButton = document.createElement('button');
+  changePositionButton.setAttribute('data-testid', 'change-position-button');
+  changePositionButton.textContent = 'Change Position';
+  changePositionButton.onclick = () => {
+    if (mockDesigner.onChangeTemplateCallback) {
+      const updatedTemplate = JSON.parse(JSON.stringify(template));
+      if (updatedTemplate.schemas[0][0]) {
+        updatedTemplate.schemas[0][0].position = { x: 50, y: 50 };
+      }
+      mockDesigner.onChangeTemplateCallback(updatedTemplate);
+    }
+  };
+  sidebarEl.appendChild(changePositionButton);
+  
+  designerContainer.appendChild(canvasEl);
   designerContainer.appendChild(sidebarEl);
   domContainer.appendChild(designerContainer);
   
