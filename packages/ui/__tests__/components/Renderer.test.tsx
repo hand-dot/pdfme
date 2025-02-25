@@ -59,7 +59,7 @@ describe('Renderer Component', () => {
   let container: HTMLElement;
   const plugins = { text, image };
   const options = { font: getDefaultFont() };
-  const cache = {};
+  const cache = new Map();
   
   beforeEach(() => {
     container = document.createElement('div');
