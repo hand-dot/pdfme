@@ -52,6 +52,25 @@ jest.mock('antd', () => {
   };
 });
 
+// Mock form-render library which is used in DetailView
+jest.mock('form-render', () => {
+  const useFormMock = jest.fn().mockReturnValue({
+    setValues: jest.fn(),
+    resetFields: jest.fn(),
+    validateFields: jest.fn().mockResolvedValue({}),
+  });
+  
+  const FormRenderMock = jest.fn().mockImplementation(({ children }) => (
+    <div data-testid="form-render-mock">Form Render Mock</div>
+  ));
+  
+  return {
+    __esModule: true,
+    default: FormRenderMock,
+    useForm: useFormMock,
+  };
+});
+
 describe('RightSidebar Component', () => {
   let container: HTMLElement;
   const plugins = { text, image };
