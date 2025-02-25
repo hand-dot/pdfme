@@ -22,6 +22,87 @@ jest.mock('../../src/helper', () => ({
   uuid: jest.fn().mockReturnValue('test-uuid'),
 }));
 
+// Mock Designer class
+jest.mock('../../src/Designer', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ domContainer, template }) => {
+      // Render the mock components directly to the DOM
+      const div = document.createElement('div');
+      div.setAttribute('data-testid', 'designer-container');
+      
+      // Add some focusable elements for keyboard navigation tests
+      const button1 = document.createElement('button');
+      button1.setAttribute('aria-label', 'Test Button 1');
+      div.appendChild(button1);
+      
+      const button2 = document.createElement('button');
+      button2.setAttribute('aria-label', 'Test Button 2');
+      div.appendChild(button2);
+      
+      domContainer.appendChild(div);
+      
+      return {
+        onChangeTemplate: jest.fn(),
+        updateTemplate: jest.fn(),
+        destroy: jest.fn(),
+      };
+    }),
+  };
+});
+
+// Mock Form class
+jest.mock('../../src/Form', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
+      // Render the mock components directly to the DOM
+      const div = document.createElement('div');
+      div.setAttribute('data-testid', 'form-container');
+      
+      // Add input elements for keyboard navigation tests
+      const input1 = document.createElement('input');
+      input1.setAttribute('aria-label', 'Test Input 1');
+      div.appendChild(input1);
+      
+      const input2 = document.createElement('input');
+      input2.setAttribute('aria-label', 'Test Input 2');
+      div.appendChild(input2);
+      
+      domContainer.appendChild(div);
+      
+      return {
+        updateTemplate: jest.fn(),
+        destroy: jest.fn(),
+      };
+    }),
+  };
+});
+
+// Mock Viewer class
+jest.mock('../../src/Viewer', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ domContainer, template, inputs }) => {
+      // Render the mock components directly to the DOM
+      const div = document.createElement('div');
+      div.setAttribute('data-testid', 'viewer-container');
+      
+      // Add some focusable elements for keyboard navigation tests
+      const button = document.createElement('button');
+      button.setAttribute('aria-label', 'Test Button');
+      div.appendChild(button);
+      
+      domContainer.appendChild(div);
+      
+      return {
+        updateTemplate: jest.fn(),
+        destroy: jest.fn(),
+      };
+    }),
+  };
+});
+
 describe('Accessibility Tests', () => {
   let container: HTMLDivElement;
   
