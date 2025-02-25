@@ -109,6 +109,14 @@ const mockForm = jest.fn().mockImplementation(({ domContainer, template, inputs 
       const fieldContainer = document.createElement('div');
       fieldContainer.setAttribute('data-testid', `form-field-${schema.name}`);
       
+      // Create a renderer element for the form field
+      const rendererEl = document.createElement('div');
+      rendererEl.setAttribute('data-testid', `renderer-${schema.type}-form`);
+      rendererEl.textContent = inputs && inputs[0] && inputs[0][schema.name] 
+        ? inputs[0][schema.name] 
+        : schema.content || '';
+      fieldContainer.appendChild(rendererEl);
+      
       // Create an input element
       const inputEl = document.createElement('input');
       inputEl.setAttribute('data-testid', `input-${schema.name}`);
@@ -147,6 +155,12 @@ const mockForm = jest.fn().mockImplementation(({ domContainer, template, inputs 
           const inputEl = formContainer.querySelector(`[data-testid="input-${fieldName}"]`);
           if (inputEl) {
             inputEl.value = newInputs[0][fieldName];
+          }
+          
+          // Also update renderer elements
+          const rendererEl = formContainer.querySelector(`[data-testid^="renderer-"][data-testid$="-form"]`);
+          if (rendererEl) {
+            rendererEl.textContent = newInputs[0][fieldName] || '';
           }
         });
       }
