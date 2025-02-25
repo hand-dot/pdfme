@@ -17,9 +17,15 @@ const mockDesigner = jest.fn().mockImplementation(({ domContainer, template }) =
       // Add ID to schema for testing
       const schemaWithId = { ...schema, id: 'test-uuid' };
       
+      // Create schema element
       const schemaEl = document.createElement('div');
       schemaEl.setAttribute('data-testid', `schema-test-uuid`);
-      schemaEl.textContent = schema.type === 'image' ? 'Image content' : schema.content;
+      
+      // Create renderer element with proper data-testid for plugin type
+      const rendererEl = document.createElement('div');
+      rendererEl.setAttribute('data-testid', `renderer-${schema.type}`);
+      rendererEl.textContent = schema.type === 'image' ? 'Image content' : schema.content;
+      schemaEl.appendChild(rendererEl);
       
       // Add update button
       const updateButton = document.createElement('button');
