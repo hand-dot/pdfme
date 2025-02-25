@@ -68,8 +68,10 @@ describe('RightSidebar Component', () => {
 
   const renderComponent = (props: any) => {
     // Ensure activeElements is always provided with a default empty array
+    // Also provide a default size object with height
     const mergedProps = {
       activeElements: [],
+      size: { width: 800, height: 600 },
       ...props
     };
     
