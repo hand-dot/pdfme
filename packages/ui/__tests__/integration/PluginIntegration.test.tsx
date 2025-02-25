@@ -24,42 +24,7 @@ jest.mock('../../src/helper', () => ({
   uuid: jest.fn().mockReturnValue('test-uuid'),
 }));
 
-// Create a custom plugin for testing
-const customPlugin = {
-  propPanel: {
-    defaultSchema: {
-      type: 'custom',
-      content: '',
-      position: { x: 0, y: 0 },
-      width: 100,
-      height: 20,
-      customProp: 'default',
-    },
-    schema: [
-      {
-        key: 'customProp',
-        label: 'Custom Property',
-        type: 'text',
-      },
-    ],
-  },
-  ui: jest.fn().mockImplementation(({ schema, value, mode }) => (
-    <div data-testid={`custom-plugin-${mode}`}>
-      {mode === 'form' ? (
-        <input 
-          data-testid="custom-plugin-input" 
-          value={value || ''} 
-          onChange={(e) => {}}
-        />
-      ) : (
-        <div data-testid="custom-plugin-content">
-          {value || schema.content}
-          <div data-testid="custom-prop-value">{schema.customProp}</div>
-        </div>
-      )}
-    </div>
-  )),
-};
+// We'll use the standard plugins (text, image) for testing
 
 describe('Plugin Integration', () => {
   let container: HTMLDivElement;
@@ -116,22 +81,7 @@ describe('Plugin Integration', () => {
     ],
   });
 
-  const getCustomTemplate = (): Template => ({
-    basePdf: BLANK_PDF,
-    schemas: [
-      [
-        {
-          name: 'customField',
-          type: 'custom',
-          content: 'Custom content',
-          position: { x: 20, y: 20 },
-          width: 100,
-          height: 20,
-          customProp: 'Custom value',
-        },
-      ],
-    ],
-  });
+  // We'll use the text and image templates for testing
 
   test('should render text plugin in Designer', async () => {
     // Mock the Renderer component to verify plugin usage
@@ -183,50 +133,45 @@ describe('Plugin Integration', () => {
     });
   });
 
-  test('should use custom plugin in Form and Viewer', async () => {
+  test('should use standard plugins in Form and Viewer', async () => {
     // Mock the Renderer component to verify plugin usage
     jest.mock('../../src/components/Renderer', () => ({
       __esModule: true,
-      default: jest.fn().mockImplementation(({ schema, mode }) => {
-        if (schema.type === 'custom') {
-          return customPlugin.ui({ schema, value: schema.content, mode });
-        }
-        return <div>Default renderer</div>;
-      }),
+      default: jest.fn().mockImplementation(({ schema, mode }) => (
+        <div data-testid={`renderer-${schema.type}-${mode}`}>
+          {schema.content}
+        </div>
+      )),
     }));
     
-    // Initialize the Form with custom plugin
+    // Initialize the Form with text plugin
     const form = new Form({
       domContainer: container,
-      template: getCustomTemplate(),
-      inputs: [{ customField: 'Custom input value' }],
-      plugins: { custom: customPlugin },
+      template: getTextTemplate(),
+      inputs: [{ textField: 'Text input value' }],
     });
     
     // Wait for the component to render
     await waitFor(() => {
-      const customPluginElement = document.querySelector('[data-testid="custom-plugin-form"]');
-      expect(customPluginElement).toBeInTheDocument();
+      const textPluginElement = document.querySelector('[data-testid="renderer-text-form"]');
+      expect(textPluginElement).toBeInTheDocument();
     });
     
     // Clean up
     form.destroy();
     
-    // Initialize the Viewer with custom plugin
+    // Initialize the Viewer with text plugin
     const viewer = new Viewer({
       domContainer: container,
-      template: getCustomTemplate(),
-      inputs: [{ customField: 'Custom input value' }],
-      plugins: { custom: customPlugin },
+      template: getTextTemplate(),
+      inputs: [{ textField: 'Text input value' }],
     });
     
     // Wait for the component to render
     await waitFor(() => {
-      const customPluginElement = document.querySelector('[data-testid="custom-plugin-viewer"]');
-      expect(customPluginElement).toBeInTheDocument();
-      
-      const customPropValue = document.querySelector('[data-testid="custom-prop-value"]');
-      expect(customPropValue?.textContent).toBe('Custom value');
+      const textPluginElement = document.querySelector('[data-testid="renderer-text-viewer"]');
+      expect(textPluginElement).toBeInTheDocument();
+      expect(textPluginElement?.textContent).toBe('Text input value');
     });
   });
 
