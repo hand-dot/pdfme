@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import * as React from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Canvas from '../../../src/components/Designer/Canvas';

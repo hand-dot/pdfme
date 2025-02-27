@@ -19,7 +19,7 @@ jest.mock('antd', () => {
       // Create a mock implementation that renders the items
       return (
         <div data-testid="collapse-mock">
-          {items && items.map((item, index) => (
+          {items && items.map((item: { label: string, children?: React.ReactNode }, index: number) => (
             <div key={index} className="ant-collapse-item">
               <div className="ant-collapse-header">{item.label}</div>
               <div className="ant-collapse-content">
