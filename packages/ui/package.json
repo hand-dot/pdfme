@@ -79,7 +79,8 @@
       "jest-canvas-mock"
     ],
     "setupFilesAfterEnv": [
-      "./__tests__/test-helpers.js"
+      "./__tests__/test-helpers.js",
+      "./jest.setup.js"
     ],
     "moduleNameMapper": {
       "\\.(png|css)$": "<rootDir>/__mocks__/assetsTransformer.js",
