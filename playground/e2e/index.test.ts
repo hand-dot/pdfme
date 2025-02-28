@@ -10,8 +10,8 @@ import formInputRecord from './formInputRecord.json';
 const baseUrl = 'http://localhost:4173';
 
 const timeout = 60000;
-// Increase timeout for CI environment
-jest.setTimeout(process.env.CI === 'true' ? timeout * 20 : timeout * 5);
+// Increase timeout for CI environment (but not too much to avoid GitHub Actions timeout)
+jest.setTimeout(process.env.CI === 'true' ? timeout * 10 : timeout * 5);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
