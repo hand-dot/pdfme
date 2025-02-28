@@ -98,7 +98,7 @@ describe('Playground E2E Tests', () => {
     browser = await puppeteer.launch({
       headless: !isRunningLocal,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      protocolTimeout: isCI ? timeout * 2 : timeout,
+      protocolTimeout: isCI ? timeout * 5 : timeout,
     });
     page = await browser.newPage();
     await page.setRequestInterception(true);
