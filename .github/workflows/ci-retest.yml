@@ -1,0 +1,11 @@
+name: Re-run CI on Comment
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  rerun:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/retest')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger CI
+        run: echo "CI is re-running!"
