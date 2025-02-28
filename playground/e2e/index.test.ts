@@ -11,7 +11,7 @@ const baseUrl = 'http://localhost:4173';
 
 const timeout = 60000;
 // Increase timeout for CI environment
-jest.setTimeout(process.env.CI === 'true' ? timeout * 10 : timeout * 5);
+jest.setTimeout(process.env.CI === 'true' ? timeout * 20 : timeout * 5);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
