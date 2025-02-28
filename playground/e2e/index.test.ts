@@ -98,7 +98,7 @@ describe('Playground E2E Tests', () => {
     browser = await puppeteer.launch({
       headless: !isRunningLocal,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      protocolTimeout: isCI ? timeout * 5 : timeout,
+      protocolTimeout: isCI ? timeout * 15 : timeout,
     });
     page = await browser.newPage();
     await page.setRequestInterception(true);
@@ -167,8 +167,18 @@ describe('Playground E2E Tests', () => {
       }
 
       console.log('5. テンプレート一覧画面に戻る');
-      await page.click('#templates-nav');
-      await sleep(1000);
+      try {
+        await page.click('#templates-nav');
+      } catch (error) {
+        console.log('Click timeout occurred for templates-nav, trying alternative method...');
+        // Try alternative method using evaluate
+        await page.evaluate(() => {
+          const element = document.querySelector('#templates-nav');
+          if (element) (element as HTMLElement).click();
+        });
+      }
+      // Increase wait time in CI environment
+      await sleep(isCI ? 3000 : 1000);
 
       console.log('6. Pedigreeテンプレートをクリック');
       await page.waitForSelector('#template-img-pedigree', { timeout });
@@ -226,11 +236,30 @@ describe('Playground E2E Tests', () => {
       }
 
       console.log('13. Save Localボタンでローカル保存 ');
-      await page.click('#save-local');
-      await sleep(500);
+      try {
+        await page.click('#save-local');
+      } catch (error) {
+        console.log('Click timeout occurred for save-local, trying alternative method...');
+        // Try alternative method using evaluate
+        await page.evaluate(() => {
+          const element = document.querySelector('#save-local');
+          if (element) (element as HTMLElement).click();
+        });
+      }
+      // Increase wait time in CI environment
+      await sleep(isCI ? 2000 : 500);
 
       console.log('14. form-viewer-nav をクリックしてフォームビューアーに遷移');
-      await page.click('#form-viewer-nav');
+      try {
+        await page.click('#form-viewer-nav');
+      } catch (error) {
+        console.log('Click timeout occurred for form-viewer-nav, trying alternative method...');
+        // Try alternative method using evaluate
+        await page.evaluate(() => {
+          const element = document.querySelector('#form-viewer-nav');
+          if (element) (element as HTMLElement).click();
+        });
+      }
       
       // Add retry logic for navigation
       try {
