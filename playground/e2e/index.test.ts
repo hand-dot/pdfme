@@ -165,7 +165,7 @@ describe('Playground E2E Tests', () => {
     }
   };
 
-  // Skip most tests in CI environment to reduce test time
+  // Skip most tests in CI environment to reduce test time and prevent timeouts
   if (isCI) {
     test('Basic navigation test in CI', async () => {
       if (!browser) throw new Error('Browser not initialized');
