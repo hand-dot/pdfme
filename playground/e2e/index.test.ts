@@ -126,7 +126,7 @@ describe('Playground E2E Tests', () => {
     }
   });
 
-  // Helper function to safely click an element with fallback
+  // Helper function to safely click an element with fallback and retry logic
   const safeClick = async (selector: string, description: string) => {
     if (!page) throw new Error('Page not initialized');
     console.log(`Clicking ${description} (${selector})...`);
