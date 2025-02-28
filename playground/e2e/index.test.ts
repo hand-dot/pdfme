@@ -98,6 +98,7 @@ describe('Playground E2E Tests', () => {
     browser = await puppeteer.launch({
       headless: !isRunningLocal,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      protocolTimeout: isCI ? timeout * 2 : timeout,
     });
     page = await browser.newPage();
     await page.setRequestInterception(true);
@@ -256,8 +257,15 @@ describe('Playground E2E Tests', () => {
     } catch (e) {
       // テストで失敗した瞬間のスクリーンショットを取得し、保存
       console.error(e);
-      const screenshot = await page.screenshot();
-      fs.writeFileSync('e2e-error-screenshot.png', screenshot, 'base64');
+      try {
+        // Use a shorter timeout for error screenshots in CI
+        const screenshotOptions = isCI ? { timeout: timeout / 2 } : {};
+        const screenshot = await page.screenshot(screenshotOptions);
+        fs.writeFileSync('e2e-error-screenshot.png', screenshot, 'base64');
+      } catch (screenshotError) {
+        console.error('Failed to capture error screenshot:', screenshotError);
+        // Continue with the original error
+      }
       throw e;
     }
   });
