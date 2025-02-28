@@ -259,9 +259,11 @@ describe('Playground E2E Tests', () => {
       console.error(e);
       try {
         // Use a shorter timeout for error screenshots in CI
-        const screenshotOptions = isCI ? { timeout: timeout / 2 } : {};
+        const screenshotOptions = isCI ? 
+          { timeout: timeout / 2, encoding: 'base64' } : 
+          { encoding: 'base64' };
         const screenshot = await page.screenshot(screenshotOptions);
-        fs.writeFileSync('e2e-error-screenshot.png', screenshot, 'base64');
+        fs.writeFileSync('e2e-error-screenshot.png', screenshot);
       } catch (screenshotError) {
         console.error('Failed to capture error screenshot:', screenshotError);
         // Continue with the original error
